@@ -1,0 +1,41 @@
+name: Build and Release
+
+on:
+  push:
+    branches: ["main"]
+    tags:
+      - "v*" # Push events to matching v*, i.e. v1.0, v20.15.10
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Build
+        run: cargo build --release
+      - name: Upload artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: llmctx
+          path: target/release/llmctx
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    if: startsWith(github.ref, 'refs/tags/') # Only run release job on tag push
+    steps:
+      - name: Download artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: llmctx
+          path: target/release/
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            target/release/llmctx
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

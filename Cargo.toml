@@ -1,0 +1,21 @@
+[package]
+name = "llmctx"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+clap = { version = "4.5.21", features = ["derive"] }
+cli-clipboard = "0.4.0"
+env_logger = "0.11.5"
+log = "0.4.22"
+walkdir = "2.5.0"
+
+[profile.release]
+opt-level = 3      # Maximum optimization
+lto = true         # Link-time optimization
+codegen-units = 16 # Reduce compilation time (but may increase binary size)
+panic = 'unwind'   # Smaller binary size (but less helpful backtraces)
+
+[profile.dev]
+opt-level = 0 # No optimization for faster compilation
+debug = true  # Include debug symbols for debugging
